@@ -1,0 +1,11 @@
+{% extends 'base.html' %}
+{% load bootstrap %}
+{% block body %}
+        <form role="form" method="POST">
+            {% csrf_token %}
+            {{ form|bootstrap }}
+            <button type="sumbit" class="btn btn-primary">Zaloguj <i class="fas fa-sign-in-alt"></i></button>
+        </form>
+        </div>
+    </div>
+{% endblock %}

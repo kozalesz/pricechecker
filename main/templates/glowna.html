@@ -1,0 +1,82 @@
+{% extends 'base.html' %}
+{% block title %} Strona główna {% endblock %}
+{% block body %}
+{% if user.is_authenticated %}
+<div class="jumbotron jumbotron-fluid">
+  <div class="container">
+    <h1 class="display-4">Witaj na PriceChecker!</h1>
+    <p class="lead">Naciśnij przycisk poniżej, aby sortować buty po największej obniżce!</p>
+    <form action="{% url 'glowna' %}" method="POST">
+        {% csrf_token %}
+        <input name="what" value="steal" hidden>
+        <button type="sumbit" class="btn btn-primary">Szukaj STEALA!</button>
+    </form>
+  </div>
+</div>
+{% else %}
+<div class="jumbotron jumbotron-fluid">
+  <div class="container">
+    <h1 class="display-4">Witaj na PriceChecker!</h1>
+  </div>
+</div>
+{% endif %}
+{% if text %}
+    <div class="alert alert-warning" role="alert">
+        {{ text }}
+    </div>
+{% endif %}
+{% for but in buty.object_list %}
+{% if forloop.counter0|divisibleby:3 %}
+<div class="container">
+  <div class="row">
+{% endif %}
+    <div class="col-sm" class="card">
+        <div class="card" style="width: 300px;">
+            <img src="{{ but.url_jpg }}" class="card-img-top" alt="{{ but.product_name }}">
+            <div class="card-body">
+                <h5 class="card-title">{{ but.product_name }}</h5>
+                <p class="card-text"><a href="/glowna?brand={{ but.brand }}">{{ but.brand }}</a></p>
+            </div>
+        <ul class="list-group list-group-flush">
+        <li class="list-group-item">Numer producetna: <b>{{ but.product_number }}</b></li>
+        <li class="list-group-item">Cena katalogowa: <b>{{ but.price_regular }}</b></li>
+        <li class="list-group-item">Cena obecna: <b>{{ but.price_now }}</b></li>
+        </ul>
+            <div class="card-body">
+                <a href="{{ but.url }}" class="card-link">Kup</a>
+            </div>
+        </div>
+    </div>
+{% if forloop.counter|divisibleby:3 %}
+  </div>
+</div>
+{% endif %}
+{% endfor %}
+{% if buty.has_other_pages %}
+{% with search_brand=brand %}
+  <ul class="pagination">
+    {% if buty.has_previous %}
+    <li class="page-item">
+      <a class="page-link" href="?page=1" tabindex="-1" aria-disabled="true">Pierwsza</a>
+    </li>
+    <li class="page-item">
+      <a class="page-link" href="?page={{ buty.previous_page_number }}{{ search_brand }}" tabindex="-1" aria-disabled="true">Poprzednia</a>
+    </li>
+    <li class="page-item"><a class="page-link" href="?page={{ page|add:"-1" }}{{ search_brand }}">{{ page|add:"-1" }}</a></li>
+      {% endif %}
+    <li class="page-item active" aria-current="page">
+      <a class="page-link" href="?page={{ page }}{{ search_brand }}">{{ page }}<span class="sr-only">(current)</span></a>
+    </li>
+      {% if buty.has_next %}
+    <li class="page-item"><a class="page-link" href="?page={{ page|add:"1" }}{{ search_brand }}">{{ page|add:"1" }}</a></li>
+    <li class="page-item">
+      <a class="page-link" href="?page={{ buty.next_page_number }}{{ search_brand }}">Następna</a>
+    </li>
+    <li class="page-item">
+      <a class="page-link" href="?page={{ buty.paginator.num_pages }}{{ search_brand }}" tabindex="-1" aria-disabled="true">Ostatnia</a>
+    </li>
+      {% endif %}
+  </ul>
+{% endwith %}
+{% endif %}
+{% endblock %}
