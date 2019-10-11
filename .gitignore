@@ -1,3 +1,4 @@
 .idea
 pricechecker/local_settings.py
 __pycache__/
+skrypty/database_settings
